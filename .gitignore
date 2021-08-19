@@ -1,0 +1,6 @@
+#Ignored things
+[Rr]elease/
+[Dd]ebug/
+[Bb]in/
+[Oo]bj/
+x64/
