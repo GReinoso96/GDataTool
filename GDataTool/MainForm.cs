@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -18,14 +19,20 @@ namespace GDataTool
 
 		MeleeWeapon mweap;
 		MeleeWeapon[] mweapons = new MeleeWeapon[381];
+		GunnerWeapon gweap;
+		GunnerWeapon[] gweapons = new GunnerWeapon[77];
 
 		MeleeWeapon mweapBuffer;
+		GunnerWeapon gweapBuffer;
 
 		StringHelper sHelper = new StringHelper();
 
 		//Offsets
 		long meleeStart = 0x000746E0;
-		long meleeNameStart = 0x0008C878;
+		long eqStringStart = 0x0008C878;
+		long gunnerStringStart = 0x00092760;
+		long gunnerStart = 0x00076AA0;
+		//long gunnerNameStart = 0x0008C878;
 
 		public weaponForm()
 		{
@@ -55,7 +62,10 @@ namespace GDataTool
 		{
 			using (fileStream = new FileStream(fileName, FileMode.Open, FileAccess.Read))
 			{
+				//Melee Weapons
 				BinaryReader br = new BinaryReader(fileStream, Encoding.GetEncoding("shift_jis"));
+				br.BaseStream.Seek(0x00000008, SeekOrigin.Begin);
+				var overlayOffset = br.ReadUInt32();
 				br.BaseStream.Seek(meleeStart, SeekOrigin.Begin);
 
 				for (int i = 0; i <= 380; i++)
@@ -66,22 +76,41 @@ namespace GDataTool
 						br.ReadByte(), br.ReadByte(), br.ReadByte(), br.ReadByte(),
 						br.ReadByte(), br.ReadUInt16(), br.ReadUInt32());
 					var oldOffset = br.BaseStream.Position;
-					br.BaseStream.Seek(mweap.NameOffset - 0x4A0C80, SeekOrigin.Begin);
+					br.BaseStream.Seek(mweap.NameOffset - overlayOffset, SeekOrigin.Begin);
 					mweap.Name = sHelper.ReadUntilNull(br);
 					br.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
 					mweapons[i] = mweap;
 					lstWeapons.Items.Add(mweap.Name);
 				}
 				lstWeapons.SelectedIndex = 0;
+
+				br.BaseStream.Seek(gunnerStart, SeekOrigin.Begin);
+				//Gunner Weapons
+				for(int j = 0; j <= 76; j++)
+                {
+					gweap = new GunnerWeapon(br.ReadByte(), br.ReadByte(), br.ReadByte(),
+						br.ReadByte(), br.ReadUInt32(), br.ReadUInt16(), br.ReadByte(),
+						br.ReadByte(), br.ReadByte(), br.ReadByte(), br.ReadByte(),
+						br.ReadByte(), br.ReadUInt32(), br.ReadInt32());
+					var oldOffsetGun = br.BaseStream.Position;
+					br.BaseStream.Seek(gweap.StringOffset - overlayOffset, SeekOrigin.Begin);
+					gweap.Name = sHelper.ReadUntilNull(br);
+					br.BaseStream.Seek(oldOffsetGun, SeekOrigin.Begin);
+					gweapons[j] = gweap;
+					lstGunner.Items.Add(gweap.Name);
+				}
+				lstGunner.SelectedIndex = 0;
+
+				br.Dispose();
 			}
 		}
 
 		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
 		{
-			UpdateSelectedData();
+			UpdateMeleeData();
 		}
 
-		public void UpdateSelectedData()
+		public void UpdateMeleeData()
 		{
 			txbName.Text = mweapons[lstWeapons.SelectedIndex].Name;
 			nudModel.Value = mweapons[lstWeapons.SelectedIndex].ModelID;
@@ -104,6 +133,59 @@ namespace GDataTool
 			label18.Text = $"Offset: {(mweapons[lstWeapons.SelectedIndex].NameOffset).ToString()}";
 		}
 
+		public void UpdateGunnerData()
+		{
+			txbNameGunner.Text = gweapons[lstGunner.SelectedIndex].Name;
+			nudModelGunner.Value = gweapons[lstGunner.SelectedIndex].Model;
+			nudRarityGunner.Value = gweapons[lstGunner.SelectedIndex].Rarity;
+			lblRareGunner.Text = $"RARE-{nudRarityGunner.Value + 1}";
+			cbxReload.SelectedIndex = gweapons[lstGunner.SelectedIndex].ReloadSpeed;
+			cbxRecoil.SelectedIndex = gweapons[lstGunner.SelectedIndex].RecoilLvl;
+			nudPriceGunner.Value = gweapons[lstGunner.SelectedIndex].Price;
+			lblPriceGunner.Text = $"Craft: {(gweapons[lstGunner.SelectedIndex].Price / 2).ToString()}";
+			nudUnk1.Value = gweapons[lstGunner.SelectedIndex].Unk1;
+			nudUnk3.Value = gweapons[lstGunner.SelectedIndex].Unk3;
+			nudUnk4.Value = gweapons[lstGunner.SelectedIndex].Unk4;
+			nudDamageGunner.Value = gweapons[lstGunner.SelectedIndex].Damage;
+			nudDefenseGunner.Value = gweapons[lstGunner.SelectedIndex].Defense;
+			nudCapacity.Value = gweapons[lstGunner.SelectedIndex].AmmoCapacity;
+			nudSortOrderGunner.Value = gweapons[lstGunner.SelectedIndex].SortOrder;
+			byte[] ammoByteArray = BitConverter.GetBytes(gweapons[lstGunner.SelectedIndex].BulletConfig);
+			BitArray ammoArray = new BitArray(ammoByteArray);
+            chkNormal1.Checked = ammoArray[0] == true;
+			chkNormal2.Checked = ammoArray[1] == true;
+			chkNormal3.Checked = ammoArray[2] == true;
+			chkPierce1.Checked = ammoArray[3] == true;
+			chkPierce2.Checked = ammoArray[4] == true;
+			chkPierce3.Checked = ammoArray[5] == true;
+			chkPellet1.Checked = ammoArray[6] == true;
+			chkPellet2.Checked = ammoArray[7] == true;
+			chkPellet3.Checked = ammoArray[8] == true;
+			chkCrag1.Checked = ammoArray[9] == true;
+			chkCrag2.Checked = ammoArray[10] == true;
+			chkCrag3.Checked = ammoArray[11] == true;
+			chkClust1.Checked = ammoArray[12] == true;
+			chkClust2.Checked = ammoArray[13] == true;
+			chkClust3.Checked = ammoArray[14] == true;
+			chkFire.Checked = ammoArray[15] == true;
+			chkWater.Checked = ammoArray[16] == true;
+			chkThunder.Checked = ammoArray[17] == true;
+			chkDragon.Checked = ammoArray[18] == true;
+			chkRecovery1.Checked = ammoArray[19] == true;
+			chkRecovery2.Checked = ammoArray[20] == true;
+			chkPoison1.Checked = ammoArray[21] == true;
+			chkPoison2.Checked = ammoArray[22] == true;
+			chkParalysis1.Checked = ammoArray[23] == true;
+			chkParalysis2.Checked = ammoArray[24] == true;
+			chkSleep1.Checked = ammoArray[25] == true;
+			chkSleep2.Checked = ammoArray[26] == true;
+			chkTranq.Checked = ammoArray[27] == true;
+			chkPaint.Checked = ammoArray[28] == true;
+			chkDemon.Checked = ammoArray[29] == true;
+			chkArmor.Checked = ammoArray[30] == true;
+			chkUnknown.Checked = ammoArray[31] == true;
+		}
+
 		private void label1_Click(object sender, EventArgs e)
 		{
 
@@ -122,6 +204,7 @@ namespace GDataTool
 		private void openToolStripMenuItem_Click(object sender, EventArgs e)
 		{
 			lstWeapons.Items.Clear();
+			lstGunner.Items.Clear();
 			loadSubMain();
 			loadWeapons(fileStream);
 		}
@@ -205,11 +288,17 @@ namespace GDataTool
 							fileStream.Position = 0;
 							fileStream.CopyTo(fsout);
 							BinaryWriter bw = new BinaryWriter(fsout);
-							bw.BaseStream.Seek(meleeNameStart, SeekOrigin.Begin);
+							bw.BaseStream.Seek(eqStringStart, SeekOrigin.Begin);
 							for (int j = 0; j <= mweapons.Length - 1; j++)
 							{
 								mweapons[j].NameOffset = (uint)(bw.BaseStream.Position + 4852864);
 								sHelper.WriteAddNull(mweapons[j].Name, bw);
+							}
+							bw.BaseStream.Seek(gunnerStringStart, SeekOrigin.Begin);
+							for (int k = 0; k <= gweapons.Length - 1; k++)
+							{
+								gweapons[k].StringOffset = (uint)(bw.BaseStream.Position + 4852864);
+								sHelper.WriteAddNull(gweapons[k].Name, bw);
 							}
 							bw.BaseStream.Seek(meleeStart, SeekOrigin.Begin);
 							for (int i = 0; i <= mweapons.Length - 1; i++)
@@ -223,6 +312,17 @@ namespace GDataTool
 								bw.Write(mweapons[i].Sleep); bw.Write(mweapons[i].SortOrder);
 								bw.Write(mweapons[i].NameOffset);
 							}
+							bw.BaseStream.Seek(gunnerStart, SeekOrigin.Begin);
+							for (int l = 0; l <= gweapons.Length - 1; l++)
+							{
+								bw.Write(gweapons[l].Model); bw.Write(gweapons[l].Rarity);
+								bw.Write(gweapons[l].Unk1); bw.Write(gweapons[l].ReloadSpeed);
+								bw.Write(gweapons[l].Price); bw.Write(gweapons[l].Damage);
+								bw.Write(gweapons[l].Defense); bw.Write(gweapons[l].SortOrder);
+								bw.Write(gweapons[l].RecoilLvl); bw.Write(gweapons[l].AmmoCapacity);
+								bw.Write(gweapons[l].Unk3); bw.Write(gweapons[l].Unk4);
+								bw.Write(gweapons[l].StringOffset); bw.Write(gweapons[l].BulletConfig);
+							}
 							byte[] result = fsout.ToArray();
 							File.WriteAllBytes(saveFileDialog1.FileName, result);
 							MessageBox.Show("Saved Correctly!", "Success");
@@ -232,7 +332,7 @@ namespace GDataTool
 					}
 					catch (IOException ex)
 					{
-						MessageBox.Show("IOException, the file could not be accessed!", "Error");
+						MessageBox.Show(ex.Message, "Error");
 					}
 					catch (Exception ex)
 					{
@@ -302,7 +402,7 @@ namespace GDataTool
 
 		private void btnPaste_Click(object sender, EventArgs e)
 		{
-			if (lstWeapons.Items.Count != 0)
+			if (lstWeapons.Items.Count != 0 && mweapBuffer != null)
 			{
 				nudModel.Value = mweapBuffer.ModelID;
 				nudRarity.Value = mweapBuffer.Rarity;
@@ -344,11 +444,17 @@ namespace GDataTool
 						fileStream.Seek(0, SeekOrigin.Begin);
 						fileStream.CopyTo(mstream);
 						BinaryWriter bw = new BinaryWriter(mstream);
-						bw.BaseStream.Seek(meleeNameStart, SeekOrigin.Begin);
+						bw.BaseStream.Seek(eqStringStart, SeekOrigin.Begin);
 						for (int j = 0; j <= mweapons.Length - 1; j++)
 						{
 							mweapons[j].NameOffset = (uint)(bw.BaseStream.Position + 4852864);
 							sHelper.WriteAddNull(mweapons[j].Name, bw);
+						}
+						bw.BaseStream.Seek(gunnerStringStart, SeekOrigin.Begin);
+						for (int k = 0; k <= gweapons.Length - 1; k++)
+						{
+							gweapons[k].StringOffset = (uint)(bw.BaseStream.Position + 4852864);
+							sHelper.WriteAddNull(gweapons[k].Name, bw);
 						}
 						bw.BaseStream.Seek(meleeStart, SeekOrigin.Begin);
 						for (int i = 0; i <= mweapons.Length - 1; i++)
@@ -361,6 +467,17 @@ namespace GDataTool
 							bw.Write(mweapons[i].Poison); bw.Write(mweapons[i].Paralysis);
 							bw.Write(mweapons[i].Sleep); bw.Write(mweapons[i].SortOrder);
 							bw.Write(mweapons[i].NameOffset);
+						}
+						bw.BaseStream.Seek(gunnerStart, SeekOrigin.Begin);
+						for (int l = 0; l <= gweapons.Length - 1; l++)
+						{
+							bw.Write(gweapons[l].Model); bw.Write(gweapons[l].Rarity);
+							bw.Write(gweapons[l].Unk1); bw.Write(gweapons[l].ReloadSpeed);
+							bw.Write(gweapons[l].Price); bw.Write(gweapons[l].Damage);
+							bw.Write(gweapons[l].Defense); bw.Write(gweapons[l].SortOrder);
+							bw.Write(gweapons[l].RecoilLvl); bw.Write(gweapons[l].AmmoCapacity);
+							bw.Write(gweapons[l].Unk3); bw.Write(gweapons[l].Unk4);
+							bw.Write(gweapons[l].StringOffset); bw.Write(gweapons[l].BulletConfig);
 						}
 						mstream.Seek(0, SeekOrigin.Begin);
 						fileStream.Seek(0, SeekOrigin.Begin);
@@ -375,7 +492,7 @@ namespace GDataTool
 					}
 					catch(IOException ex)
 					{
-						MessageBox.Show("IOException, the file could not be accessed!", "Error");
+						MessageBox.Show(ex.Message, "Error");
 					}
 					catch (Exception ex)
 					{
@@ -384,5 +501,159 @@ namespace GDataTool
 				}
 			}
 		}
-	}
+
+        private void lstGunner_SelectedIndexChanged(object sender, EventArgs e)
+        {
+			UpdateGunnerData();
+        }
+
+        private void btnSaveGunner_Click(object sender, EventArgs e)
+		{
+			if (lstGunner.Items.Count != 0)
+			{
+				gweapons[lstGunner.SelectedIndex].Model = (byte)nudModelGunner.Value;
+				gweapons[lstGunner.SelectedIndex].Rarity = (byte)nudRarityGunner.Value;
+				gweapons[lstGunner.SelectedIndex].Unk1 = (byte)nudUnk1.Value;
+				gweapons[lstGunner.SelectedIndex].ReloadSpeed = (byte)cbxReload.SelectedIndex;
+				gweapons[lstGunner.SelectedIndex].Price = (UInt32)nudPriceGunner.Value;
+				gweapons[lstGunner.SelectedIndex].Damage = (UInt16)nudDamageGunner.Value;
+				gweapons[lstGunner.SelectedIndex].Defense = (byte)nudDefenseGunner.Value;
+				gweapons[lstGunner.SelectedIndex].SortOrder = (byte)nudSortOrderGunner.Value;
+				gweapons[lstGunner.SelectedIndex].RecoilLvl = (byte)cbxRecoil.SelectedIndex;
+				gweapons[lstGunner.SelectedIndex].AmmoCapacity = (byte)nudCapacity.Value;
+				gweapons[lstGunner.SelectedIndex].Unk3 = (byte)nudUnk3.Value;
+				gweapons[lstGunner.SelectedIndex].Unk4 = (byte)nudUnk4.Value;
+				byte[] ammoByteArray = BitConverter.GetBytes(gweapons[lstGunner.SelectedIndex].BulletConfig);
+				BitArray ammoArray = new BitArray(ammoByteArray);
+				ammoArray[0] = chkNormal1.Checked;
+				ammoArray[1] = chkNormal2.Checked;
+				ammoArray[2] = chkNormal3.Checked;
+				ammoArray[3] = chkPierce1.Checked;
+				ammoArray[4] = chkPierce2.Checked;
+				ammoArray[5] = chkPierce3.Checked;
+				ammoArray[6] = chkPellet1.Checked;
+				ammoArray[7] = chkPellet2.Checked;
+				ammoArray[8] = chkPellet3.Checked;
+				ammoArray[9] = chkCrag1.Checked;
+				ammoArray[10] = chkCrag2.Checked;
+				ammoArray[11] = chkCrag3.Checked;
+				ammoArray[12] = chkClust1.Checked;
+				ammoArray[13] = chkClust2.Checked;
+				ammoArray[14] = chkClust3.Checked;
+				ammoArray[15] = chkFire.Checked;
+				ammoArray[16] = chkWater.Checked;
+				ammoArray[17] = chkThunder.Checked;
+				ammoArray[18] = chkDragon.Checked;
+				ammoArray[19] = chkRecovery1.Checked;
+				ammoArray[20] = chkRecovery2.Checked;
+				ammoArray[21] = chkPoison1.Checked;
+				ammoArray[22] = chkPoison2.Checked;
+				ammoArray[23] = chkParalysis1.Checked;
+				ammoArray[24] = chkParalysis2.Checked;
+				ammoArray[25] = chkSleep1.Checked;
+				ammoArray[26] = chkSleep2.Checked;
+				ammoArray[27] = chkTranq.Checked;
+				ammoArray[28] = chkPaint.Checked;
+				ammoArray[29] = chkDemon.Checked;
+				ammoArray[30] = chkArmor.Checked;
+				ammoArray[31] = chkUnknown.Checked;
+				Int32[] bytes = new Int32[1];
+				ammoArray.CopyTo(bytes, 0);
+				Int32 result = bytes[0];
+				gweapons[lstGunner.SelectedIndex].BulletConfig = result;
+				gweapons[lstGunner.SelectedIndex].Name = txbNameGunner.Text;
+
+				int oldIndex = lstGunner.SelectedIndex;
+				lstGunner.Items.Clear();
+				for (int i = 0; i <= 76; i++)
+				{
+					lstGunner.Items.Add(gweapons[i].Name);
+				}
+				lstGunner.SelectedIndex = oldIndex;
+			}
+		}
+
+        private void nudRarityGunner_ValueChanged(object sender, EventArgs e)
+		{
+			lblRareGunner.Text = $"RARE-{nudRarityGunner.Value + 1}";
+		}
+
+        private void btnCopyGunner_Click(object sender, EventArgs e)
+        {
+			if (lstGunner.Items.Count != 0)
+			{
+				gweapBuffer = new GunnerWeapon(gweapons[lstGunner.SelectedIndex].Model,
+					gweapons[lstGunner.SelectedIndex].Rarity,
+					gweapons[lstGunner.SelectedIndex].Unk1,
+					gweapons[lstGunner.SelectedIndex].ReloadSpeed,
+					gweapons[lstGunner.SelectedIndex].Price,
+					gweapons[lstGunner.SelectedIndex].Damage,
+					gweapons[lstGunner.SelectedIndex].Defense,
+					gweapons[lstGunner.SelectedIndex].SortOrder,
+					gweapons[lstGunner.SelectedIndex].RecoilLvl,
+					gweapons[lstGunner.SelectedIndex].AmmoCapacity,
+					gweapons[lstGunner.SelectedIndex].Unk3,
+					gweapons[lstGunner.SelectedIndex].Unk4,
+					gweapons[lstGunner.SelectedIndex].StringOffset,
+					gweapons[lstGunner.SelectedIndex].BulletConfig);
+				gweapBuffer.Name = gweapons[lstGunner.SelectedIndex].Name;
+			}
+		}
+
+        private void btnPasteGunner_Click(object sender, EventArgs e)
+		{
+			if (lstGunner.Items.Count != 0 && gweapBuffer!=null)
+			{
+				nudModelGunner.Value = gweapBuffer.Model;
+				nudRarityGunner.Value = gweapBuffer.Rarity;
+				nudUnk1.Value = gweapBuffer.Unk1;
+				cbxReload.SelectedIndex = gweapBuffer.ReloadSpeed;
+				nudPriceGunner.Value = gweapBuffer.Price;
+				nudDamageGunner.Value = gweapBuffer.Damage;
+				nudDefenseGunner.Value = gweapBuffer.Defense;
+				nudSortOrderGunner.Value = gweapBuffer.SortOrder;
+				cbxRecoil.SelectedIndex = gweapBuffer.RecoilLvl;
+				nudCapacity.Value = gweapBuffer.AmmoCapacity;
+				nudUnk3.Value = gweapBuffer.Unk3;
+				nudUnk4.Value = gweapBuffer.Unk4;
+				byte[] ammoByteArray = BitConverter.GetBytes(gweapBuffer.BulletConfig);
+				BitArray ammoArray = new BitArray(ammoByteArray);
+				chkNormal1.Checked = ammoArray[0] == true;
+				chkNormal2.Checked = ammoArray[1] == true;
+				chkNormal3.Checked = ammoArray[2] == true;
+				chkPierce1.Checked = ammoArray[3] == true;
+				chkPierce2.Checked = ammoArray[4] == true;
+				chkPierce3.Checked = ammoArray[5] == true;
+				chkPellet1.Checked = ammoArray[6] == true;
+				chkPellet2.Checked = ammoArray[7] == true;
+				chkPellet3.Checked = ammoArray[8] == true;
+				chkCrag1.Checked = ammoArray[9] == true;
+				chkCrag2.Checked = ammoArray[10] == true;
+				chkCrag3.Checked = ammoArray[11] == true;
+				chkClust1.Checked = ammoArray[12] == true;
+				chkClust2.Checked = ammoArray[13] == true;
+				chkClust3.Checked = ammoArray[14] == true;
+				chkFire.Checked = ammoArray[15] == true;
+				chkWater.Checked = ammoArray[16] == true;
+				chkThunder.Checked = ammoArray[17] == true;
+				chkDragon.Checked = ammoArray[18] == true;
+				chkRecovery1.Checked = ammoArray[19] == true;
+				chkRecovery2.Checked = ammoArray[20] == true;
+				chkPoison1.Checked = ammoArray[21] == true;
+				chkPoison2.Checked = ammoArray[22] == true;
+				chkParalysis1.Checked = ammoArray[23] == true;
+				chkParalysis2.Checked = ammoArray[24] == true;
+				chkSleep1.Checked = ammoArray[25] == true;
+				chkSleep2.Checked = ammoArray[26] == true;
+				chkTranq.Checked = ammoArray[27] == true;
+				chkPaint.Checked = ammoArray[28] == true;
+				chkDemon.Checked = ammoArray[29] == true;
+				chkArmor.Checked = ammoArray[30] == true;
+				chkUnknown.Checked = ammoArray[31] == true;
+				txbNameGunner.Text = gweapBuffer.Name;
+				//mweapons[lstWeapons.SelectedIndex].NameOffset = mweapBuffer.NameOffset;
+				//UpdateSelectedData();
+			}
+		}
+    }
 }
