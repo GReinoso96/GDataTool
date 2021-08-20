@@ -51,6 +51,10 @@ namespace GDataTool
 				if (openFileDialog.ShowDialog() == DialogResult.OK)
 				{
 					fileName = openFileDialog.FileName;
+					cSVToolStripMenuItem.Enabled = true;
+					sQLToolStripMenuItem.Enabled = true;
+					saveAsToolStripMenuItem.Enabled = true;
+					saveToolStripMenuItem.Enabled = true;
 					//openStream.Seek(0, SeekOrigin.
 					//fileStream = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite);
 					//fileStream = (FileStream)openFileDialog.OpenFile();
