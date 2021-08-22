@@ -51,8 +51,7 @@ namespace GDataTool
 				if (openFileDialog.ShowDialog() == DialogResult.OK)
 				{
 					fileName = openFileDialog.FileName;
-					cSVToolStripMenuItem.Enabled = true;
-					sQLToolStripMenuItem.Enabled = true;
+					exportToolStripMenuItem.Enabled = true;
 					saveAsToolStripMenuItem.Enabled = true;
 					saveToolStripMenuItem.Enabled = true;
 					//openStream.Seek(0, SeekOrigin.
@@ -97,7 +96,7 @@ namespace GDataTool
 						br.ReadByte(), br.ReadByte(), br.ReadByte(), br.ReadByte(),
 						br.ReadByte(), br.ReadUInt32(), br.ReadInt32());
 					var oldOffsetGun = br.BaseStream.Position;
-					br.BaseStream.Seek(gweap.StringOffset - overlayOffset, SeekOrigin.Begin);
+					br.BaseStream.Seek(gweap.NameOffset - overlayOffset, SeekOrigin.Begin);
 					gweap.Name = sHelper.ReadUntilNull(br);
 					br.BaseStream.Seek(oldOffsetGun, SeekOrigin.Begin);
 					gweapons[j] = gweap;
@@ -140,7 +139,7 @@ namespace GDataTool
 		public void UpdateGunnerData()
 		{
 			txbNameGunner.Text = gweapons[lstGunner.SelectedIndex].Name;
-			nudModelGunner.Value = gweapons[lstGunner.SelectedIndex].Model;
+			nudModelGunner.Value = gweapons[lstGunner.SelectedIndex].ModelID;
 			nudRarityGunner.Value = gweapons[lstGunner.SelectedIndex].Rarity;
 			lblRareGunner.Text = $"RARE-{nudRarityGunner.Value + 1}";
 			cbxReload.SelectedIndex = gweapons[lstGunner.SelectedIndex].ReloadSpeed;
@@ -211,139 +210,6 @@ namespace GDataTool
 			lstGunner.Items.Clear();
 			loadSubMain();
 			loadWeapons(fileStream);
-		}
-
-		private void cSVToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (lstWeapons.Items.Count != 0)
-			{
-				string outString = "Name;ID;Model;Rarity;Sharpness;Price;Damage;Defense;Fire;Water;Thunder;Dragon;Poison;Paralysis;Sleep;SortOrder;NameOffset;\n";
-
-				for (int i = 0; i <= mweapons.Length - 1; i++)
-				{
-					outString += $"{mweapons[i].Name};{i};{mweapons[i].ModelID};{mweapons[i].Rarity};{mweapons[i].SharpnessID};{mweapons[i].Price};{mweapons[i].Damage};{mweapons[i].Defense};{mweapons[i].Fire};{mweapons[i].Water};{mweapons[i].Thunder};{mweapons[i].Dragon};{mweapons[i].Poison};{mweapons[i].Paralysis};{mweapons[i].Sleep};{mweapons[i].SortOrder};{mweapons[i].NameOffset};\n";
-				}
-
-				try
-				{
-					SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-					saveFileDialog1.Filter = "Comma Separated Values|*.csv";
-					saveFileDialog1.Title = "Exporting CSV";
-					saveFileDialog1.ShowDialog();
-
-					if (saveFileDialog1.FileName != "")
-					{
-						File.WriteAllText(saveFileDialog1.FileName, outString, Encoding.UTF8);
-					}
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine(ex);
-				}
-			}
-		}
-
-		private void sQLToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			if (lstWeapons.Items.Count != 0)
-			{
-				string outString = "";
-				for (int i = 0; i <= mweapons.Length - 1; i++)
-				{
-					outString += "INSERT INTO meleeWeapons (Name,ID,Model,Rarity,Sharpness,Price,Damage,Defense,Fire,Water,Thunder,Dragon,Poison,Paralysis,Sleep,SortOrder,NameOffset) ";
-					outString += $"VALUES (\"{mweapons[i].Name}\",{i},{mweapons[i].ModelID},{mweapons[i].Rarity},{mweapons[i].SharpnessID},{mweapons[i].Price},{mweapons[i].Damage},{mweapons[i].Defense},{mweapons[i].Fire},{mweapons[i].Water},{mweapons[i].Thunder},{mweapons[i].Dragon},{mweapons[i].Poison},{mweapons[i].Paralysis},{mweapons[i].Sleep},{mweapons[i].SortOrder},{mweapons[i].NameOffset});\n";
-				}
-
-				try
-				{
-					SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-					saveFileDialog1.Filter = "SQL Script|*.sql";
-					saveFileDialog1.Title = "Exporting SQL";
-					saveFileDialog1.ShowDialog();
-
-					if (saveFileDialog1.FileName != "")
-					{
-						File.WriteAllText(saveFileDialog1.FileName, outString, Encoding.UTF8);
-					}
-				}
-				catch (Exception ex)
-				{
-					Console.WriteLine(ex);
-				}
-			}
-		}
-
-		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
-		{
-			using (fileStream = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite))
-			{
-				if (lstWeapons.Items.Count != 0)
-				{
-					try
-					{
-						SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-						saveFileDialog1.Filter = "Unpacked sub_main .bin|*.bin.unpacked";
-						saveFileDialog1.Title = "Exporting sub_main";
-						saveFileDialog1.ShowDialog();
-
-						if (saveFileDialog1.FileName != "")
-						{
-							MemoryStream fsout = new MemoryStream();
-							fileStream.Position = 0;
-							fileStream.CopyTo(fsout);
-							BinaryWriter bw = new BinaryWriter(fsout);
-							bw.BaseStream.Seek(eqStringStart, SeekOrigin.Begin);
-							for (int j = 0; j <= mweapons.Length - 1; j++)
-							{
-								mweapons[j].NameOffset = (uint)(bw.BaseStream.Position + 4852864);
-								sHelper.WriteAddNull(mweapons[j].Name, bw);
-							}
-							bw.BaseStream.Seek(gunnerStringStart, SeekOrigin.Begin);
-							for (int k = 0; k <= gweapons.Length - 1; k++)
-							{
-								gweapons[k].StringOffset = (uint)(bw.BaseStream.Position + 4852864);
-								sHelper.WriteAddNull(gweapons[k].Name, bw);
-							}
-							bw.BaseStream.Seek(meleeStart, SeekOrigin.Begin);
-							for (int i = 0; i <= mweapons.Length - 1; i++)
-							{
-								bw.Write(mweapons[i].ModelID); bw.Write(mweapons[i].Rarity);
-								bw.Write(mweapons[i].SharpnessID); bw.Write(mweapons[i].Price);
-								bw.Write(mweapons[i].Damage); bw.Write(mweapons[i].Defense);
-								bw.Write(mweapons[i].Fire); bw.Write(mweapons[i].Water);
-								bw.Write(mweapons[i].Thunder); bw.Write(mweapons[i].Dragon);
-								bw.Write(mweapons[i].Poison); bw.Write(mweapons[i].Paralysis);
-								bw.Write(mweapons[i].Sleep); bw.Write(mweapons[i].SortOrder);
-								bw.Write(mweapons[i].NameOffset);
-							}
-							bw.BaseStream.Seek(gunnerStart, SeekOrigin.Begin);
-							for (int l = 0; l <= gweapons.Length - 1; l++)
-							{
-								bw.Write(gweapons[l].Model); bw.Write(gweapons[l].Rarity);
-								bw.Write(gweapons[l].Unk1); bw.Write(gweapons[l].ReloadSpeed);
-								bw.Write(gweapons[l].Price); bw.Write(gweapons[l].Damage);
-								bw.Write(gweapons[l].Defense); bw.Write(gweapons[l].SortOrder);
-								bw.Write(gweapons[l].RecoilLvl); bw.Write(gweapons[l].AmmoCapacity);
-								bw.Write(gweapons[l].Unk3); bw.Write(gweapons[l].Unk4);
-								bw.Write(gweapons[l].StringOffset); bw.Write(gweapons[l].BulletConfig);
-							}
-							byte[] result = fsout.ToArray();
-							File.WriteAllBytes(saveFileDialog1.FileName, result);
-							MessageBox.Show("Saved Correctly!", "Success");
-							bw.Dispose();
-							fsout.Dispose();
-						}
-					}
-					catch (IOException ex)
-					{
-						MessageBox.Show(ex.Message, "Error");
-					}
-					catch (Exception ex)
-					{
-						MessageBox.Show(ex.Message, "Error");
-					}
-				}
-			}
 		}
 
 		private void btnSaveChanges_Click(object sender, EventArgs e)
@@ -436,7 +302,7 @@ namespace GDataTool
 			}
 		}
 
-		private void saveToolStripMenuItem1_Click(object sender, EventArgs e)
+		public void SaveSubMain(string fname, FileMode fmode = FileMode.Open, FileAccess faccess = FileAccess.ReadWrite)
 		{
 			using (fileStream = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite))
 			{
@@ -445,7 +311,7 @@ namespace GDataTool
 					try
 					{
 						MemoryStream mstream = new MemoryStream();
-						fileStream.Seek(0, SeekOrigin.Begin);
+						fileStream.Position = 0;
 						fileStream.CopyTo(mstream);
 						BinaryWriter bw = new BinaryWriter(mstream);
 						bw.BaseStream.Seek(eqStringStart, SeekOrigin.Begin);
@@ -457,7 +323,7 @@ namespace GDataTool
 						bw.BaseStream.Seek(gunnerStringStart, SeekOrigin.Begin);
 						for (int k = 0; k <= gweapons.Length - 1; k++)
 						{
-							gweapons[k].StringOffset = (uint)(bw.BaseStream.Position + 4852864);
+							gweapons[k].NameOffset = (uint)(bw.BaseStream.Position + 4852864);
 							sHelper.WriteAddNull(gweapons[k].Name, bw);
 						}
 						bw.BaseStream.Seek(meleeStart, SeekOrigin.Begin);
@@ -475,35 +341,78 @@ namespace GDataTool
 						bw.BaseStream.Seek(gunnerStart, SeekOrigin.Begin);
 						for (int l = 0; l <= gweapons.Length - 1; l++)
 						{
-							bw.Write(gweapons[l].Model); bw.Write(gweapons[l].Rarity);
+							bw.Write(gweapons[l].ModelID); bw.Write(gweapons[l].Rarity);
 							bw.Write(gweapons[l].Unk1); bw.Write(gweapons[l].ReloadSpeed);
 							bw.Write(gweapons[l].Price); bw.Write(gweapons[l].Damage);
 							bw.Write(gweapons[l].Defense); bw.Write(gweapons[l].SortOrder);
 							bw.Write(gweapons[l].RecoilLvl); bw.Write(gweapons[l].AmmoCapacity);
 							bw.Write(gweapons[l].Unk3); bw.Write(gweapons[l].Unk4);
-							bw.Write(gweapons[l].StringOffset); bw.Write(gweapons[l].BulletConfig);
+							bw.Write(gweapons[l].NameOffset); bw.Write(gweapons[l].BulletConfig);
 						}
 						mstream.Seek(0, SeekOrigin.Begin);
 						fileStream.Seek(0, SeekOrigin.Begin);
-
 						byte[] result = mstream.ToArray();
 
-						fileStream.Write(result, 0, result.Length);
-						MessageBox.Show("Saved Correctly!", "Success");
+						if (fname.Equals(fileName))
+						{
+							fileStream.Write(result, 0, result.Length);
+							MessageBox.Show("Saved Correctly!", "Success");
+						}
+						else
+						{
+							using (FileStream fstr = new FileStream(fname, fmode, faccess))
+							{
+								fstr.Write(result, 0, result.Length);
+								MessageBox.Show("Saved Correctly!", "Success");
+							}
+						}
+
 						bw.Dispose();
 						mstream.Dispose();
-
-					}
-					catch(IOException ex)
-					{
-						MessageBox.Show(ex.Message, "Error");
 					}
 					catch (Exception ex)
 					{
 						MessageBox.Show(ex.Message, "Error");
 					}
+
 				}
 			}
+		}
+
+		private void saveAsToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			using (SaveFileDialog saveFileDialog = new SaveFileDialog())
+			{
+				saveFileDialog.Filter = "Unpacked lobby.bin|*.bin.unpacked";
+				saveFileDialog.Title = "Exporting lobby.bin";
+				saveFileDialog.ShowDialog();
+
+				if (saveFileDialog.FileName != null && !saveFileDialog.FileName.Equals(fileName))
+				{
+					SaveSubMain(saveFileDialog.FileName, FileMode.Create, FileAccess.ReadWrite);
+					fileName = saveFileDialog.FileName;
+				}
+				else if (saveFileDialog.FileName.Equals(fileName))
+				{
+					SaveSubMain(fileName);
+					//MessageBox.Show("Can't save over the original file! Use \"Save\" option.");
+				}
+			}
+			var oldIndexBms = lstWeapons.SelectedIndex;
+			var oldIndexGun = lstGunner.SelectedIndex;
+			loadWeapons(fileStream);
+			lstWeapons.SelectedIndex = oldIndexBms;
+			lstGunner.SelectedIndex = oldIndexGun;
+		}
+
+		private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			SaveSubMain(fileName);
+			var oldIndexBms = lstWeapons.SelectedIndex;
+			var oldIndexGun = lstGunner.SelectedIndex;
+			loadWeapons(fileStream);
+			lstWeapons.SelectedIndex = oldIndexBms;
+			lstGunner.SelectedIndex = oldIndexGun;
 		}
 
         private void lstGunner_SelectedIndexChanged(object sender, EventArgs e)
@@ -515,7 +424,7 @@ namespace GDataTool
 		{
 			if (lstGunner.Items.Count != 0)
 			{
-				gweapons[lstGunner.SelectedIndex].Model = (byte)nudModelGunner.Value;
+				gweapons[lstGunner.SelectedIndex].ModelID = (byte)nudModelGunner.Value;
 				gweapons[lstGunner.SelectedIndex].Rarity = (byte)nudRarityGunner.Value;
 				gweapons[lstGunner.SelectedIndex].Unk1 = (byte)nudUnk1.Value;
 				gweapons[lstGunner.SelectedIndex].ReloadSpeed = (byte)cbxReload.SelectedIndex;
@@ -586,7 +495,7 @@ namespace GDataTool
         {
 			if (lstGunner.Items.Count != 0)
 			{
-				gweapBuffer = new GunnerWeapon(gweapons[lstGunner.SelectedIndex].Model,
+				gweapBuffer = new GunnerWeapon(gweapons[lstGunner.SelectedIndex].ModelID,
 					gweapons[lstGunner.SelectedIndex].Rarity,
 					gweapons[lstGunner.SelectedIndex].Unk1,
 					gweapons[lstGunner.SelectedIndex].ReloadSpeed,
@@ -598,7 +507,7 @@ namespace GDataTool
 					gweapons[lstGunner.SelectedIndex].AmmoCapacity,
 					gweapons[lstGunner.SelectedIndex].Unk3,
 					gweapons[lstGunner.SelectedIndex].Unk4,
-					gweapons[lstGunner.SelectedIndex].StringOffset,
+					gweapons[lstGunner.SelectedIndex].NameOffset,
 					gweapons[lstGunner.SelectedIndex].BulletConfig);
 				gweapBuffer.Name = gweapons[lstGunner.SelectedIndex].Name;
 			}
@@ -608,7 +517,7 @@ namespace GDataTool
 		{
 			if (lstGunner.Items.Count != 0 && gweapBuffer!=null)
 			{
-				nudModelGunner.Value = gweapBuffer.Model;
+				nudModelGunner.Value = gweapBuffer.ModelID;
 				nudRarityGunner.Value = gweapBuffer.Rarity;
 				nudUnk1.Value = gweapBuffer.Unk1;
 				cbxReload.SelectedIndex = gweapBuffer.ReloadSpeed;
@@ -657,6 +566,80 @@ namespace GDataTool
 				txbNameGunner.Text = gweapBuffer.Name;
 				//mweapons[lstWeapons.SelectedIndex].NameOffset = mweapBuffer.NameOffset;
 				//UpdateSelectedData();
+			}
+		}
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e)
+		{
+			if (lstWeapons.Items.Count != 0)
+			{
+				using (SaveFileDialog sfd = new SaveFileDialog())
+				{
+					sfd.Filter = "Comma-Separated Values|*.csv|SQL Script|*.sql";
+					sfd.AddExtension = true;
+					sfd.Title = "Exporting Data";
+					sfd.ShowDialog();
+
+					string outString = "";
+
+					var fext = Path.GetExtension(sfd.FileName);
+
+					fext = fext.ToUpper();
+
+					switch (fext)
+					{
+						case ".SQL":
+							for (int i = 0; i <= mweapons.Length - 1; i++)
+							{
+								outString += "INSERT INTO meleeWeapons (Name,ID,ModelID,Rarity,Sharpness,Price,Damage,Defense,Fire,Water,Thunder,Dragon,Poison,Paralysis,Sleep,SortOrder,NameOffset) ";
+								outString += $"VALUES (\"{mweapons[i].Name}\",{i},{mweapons[i].ModelID},{mweapons[i].Rarity},{mweapons[i].SharpnessID},{mweapons[i].Price},{mweapons[i].Damage},{mweapons[i].Defense},{mweapons[i].Fire},{mweapons[i].Water},{mweapons[i].Thunder},{mweapons[i].Dragon},{mweapons[i].Poison},{mweapons[i].Paralysis},{mweapons[i].Sleep},{mweapons[i].SortOrder},{mweapons[i].NameOffset});\n";
+							}
+							for (int i = 0; i <= gweapons.Length - 1; i++)
+							{
+								outString += "INSERT INTO gunnerWeapons (Name,ID,ModelID,Rarity,Unk1,ReloadSpeed,Price,Damage,Defense,SortOrder,RecoilLevel,AmmoCapacity,Unk3,Unk4,NameOffset,BulletConfig) ";
+								outString += $"VALUES (\"{gweapons[i].Name}\",{i},{gweapons[i].ModelID},{gweapons[i].Rarity},{gweapons[i].ReloadSpeed},{gweapons[i].Price},{gweapons[i].Damage},{gweapons[i].Defense},{gweapons[i].SortOrder},{gweapons[i].RecoilLvl},{gweapons[i].AmmoCapacity},{gweapons[i].Unk3},{gweapons[i].Unk4},{gweapons[i].NameOffset},{gweapons[i].BulletConfig});\n";
+							}
+
+							try
+							{
+
+								if (sfd.FileName != "")
+								{
+									File.WriteAllText(sfd.FileName, outString, Encoding.UTF8);
+								}
+							}
+							catch (Exception ex)
+							{
+								Console.WriteLine(ex);
+							}
+							break;
+						default:
+						case ".CSV":
+							outString = "Name;ID;ModelID;Rarity;Sharpness;Price;Damage;Defense;Fire;Water;Thunder;Dragon;Poison;Paralysis;Sleep;Sort Order;Name Offset;\n";
+							for (int i = 0; i <= mweapons.Length - 1; i++)
+							{
+								outString += $"{mweapons[i].Name};{i};{mweapons[i].ModelID};{mweapons[i].Rarity};{mweapons[i].SharpnessID};{mweapons[i].Price};{mweapons[i].Damage};{mweapons[i].Defense};{mweapons[i].Fire};{mweapons[i].Water};{mweapons[i].Thunder};{mweapons[i].Dragon};{mweapons[i].Poison};{mweapons[i].Paralysis};{mweapons[i].Sleep};{mweapons[i].SortOrder};{mweapons[i].NameOffset};\n";
+							}
+							outString += "\nName;ID;ModelID;Rarity;Unk1;Reload Speed;Price;Damage;Defense;Sort Order;Recoil Level;Ammo Capacity;Unk3;Unk4;Name Offset;BulletConfig;\n";
+							for (int i = 0; i <= gweapons.Length - 1; i++)
+							{
+								outString += $"{gweapons[i].Name};{i};{gweapons[i].ModelID};{gweapons[i].Rarity};{gweapons[i].Unk1};{gweapons[i].ReloadSpeed};{gweapons[i].Price};{gweapons[i].Damage};{gweapons[i].Defense};{gweapons[i].SortOrder};{gweapons[i].RecoilLvl};{gweapons[i].AmmoCapacity};{gweapons[i].Unk3};{gweapons[i].Unk4};{gweapons[i].NameOffset};{gweapons[i].BulletConfig};\n";
+							}
+
+							try
+							{
+								if (sfd.FileName != "")
+								{
+									File.WriteAllText(sfd.FileName, outString, Encoding.UTF8);
+								}
+							}
+							catch (Exception ex)
+							{
+								MessageBox.Show(ex.Message);
+							}
+							break;
+					}
+				}
 			}
 		}
     }

@@ -42,7 +42,7 @@ namespace GDataTool
             this.bulletConfig = bulletConfig;
         }
 
-        public byte Model { get => model; set => model = value; }
+        public byte ModelID { get => model; set => model = value; }
         public byte Rarity { get => rarity; set => rarity = value; }
         public byte Unk1 { get => unk1; set => unk1 = value; }
         public byte ReloadSpeed { get => reloadSpeed; set => reloadSpeed = value; }
@@ -54,7 +54,7 @@ namespace GDataTool
         public byte AmmoCapacity { get => ammoCapacity; set => ammoCapacity = value; }
         public byte Unk3 { get => unk3; set => unk3 = value; }
         public byte Unk4 { get => unk4; set => unk4 = value; }
-        public uint StringOffset { get => stringOffset; set => stringOffset = value; }
+        public uint NameOffset { get => stringOffset; set => stringOffset = value; }
         public Int32 BulletConfig { get => bulletConfig; set => bulletConfig = value; }
         public string Name { get => name; set => name = value; }
     }

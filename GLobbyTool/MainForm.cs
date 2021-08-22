@@ -99,7 +99,6 @@ namespace GLobbyTool
         {
 			txbDialogs.Text = dStrings[lstDialogStrings.SelectedIndex].Dialog;
 			nudDialogsUnknown.Value = dStrings[lstDialogStrings.SelectedIndex].Unknown;
-			//lblDialogsRealOffset.Text = $"{(dStrings[lstDialogStrings.SelectedIndex].StringOffset - baseOffset).ToString("X")}";
 		}
 
         private void btnDialogsSave_Click(object sender, EventArgs e)
