@@ -16,11 +16,13 @@ namespace GDataTool
 	{
 		private FileStream fileStream;
 		private string fileName = "";
+		private string fileNameElf = "";
 
 		private MeleeWeapon mweap;
 		private MeleeWeapon[] mweapons = new MeleeWeapon[381];
 		private GunnerWeapon gweap;
 		private GunnerWeapon[] gweapons = new GunnerWeapon[78];
+		private Descriptions[] descript = new Descriptions[1539];
 
 		private MeleeWeapon mweapBuffer;
 		private GunnerWeapon gweapBuffer;
@@ -32,6 +34,9 @@ namespace GDataTool
 		private long eqStringStart = 0x0008C878;
 		private long gunnerStringStart = 0x00092760;
 		private long gunnerStart = 0x00076AA0;
+		private long elfBaseOffset = 0x000FFE00;
+		private long elfDescriptionOffset = 0x001AA150;
+		private long elfDescriptions = 0x001CC800;
 		//long gunnerNameStart = 0x0008C878;
 
 		public weaponForm()
@@ -41,22 +46,34 @@ namespace GDataTool
 
 		public void loadSubMain()
 		{
-			using (OpenFileDialog openFileDialog = new OpenFileDialog())
+			using (OpenFileDialog ofd1 = new OpenFileDialog())
 			{
-				openFileDialog.Filter = "unpacked files (*.unpacked)|*.unpacked|All files (*.*)|*.*";
-				openFileDialog.FilterIndex = 1;
-				openFileDialog.RestoreDirectory = true;
-				openFileDialog.Title = "Load sub_main.bin.unpacked";
+				ofd1.Filter = "unpacked files (*.unpacked)|*.unpacked|All files (*.*)|*.*";
+				ofd1.FilterIndex = 1;
+				ofd1.RestoreDirectory = true;
+				ofd1.Title = "Load sub_main.bin.unpacked";
 
-				if (openFileDialog.ShowDialog() == DialogResult.OK)
+				if (ofd1.ShowDialog() == DialogResult.OK)
 				{
-					fileName = openFileDialog.FileName;
+					fileName = ofd1.FileName;
 					exportToolStripMenuItem.Enabled = true;
 					saveAsToolStripMenuItem.Enabled = true;
 					saveToolStripMenuItem.Enabled = true;
 					//openStream.Seek(0, SeekOrigin.
 					//fileStream = new FileStream(fileName, FileMode.Open, FileAccess.ReadWrite);
 					//fileStream = (FileStream)openFileDialog.OpenFile();
+				}
+			}
+			using (OpenFileDialog ofd2 = new OpenFileDialog())
+			{
+				ofd2.Filter = "ELF file (*.69)|*.69|All files (*.*)|*.*";
+				ofd2.FilterIndex = 1;
+				ofd2.RestoreDirectory = true;
+				ofd2.Title = "Load slpm_658.69";
+
+				if (ofd2.ShowDialog() == DialogResult.OK)
+				{
+					fileNameElf = ofd2.FileName;
 				}
 			}
 		}
@@ -71,7 +88,7 @@ namespace GDataTool
 				var overlayOffset = br.ReadUInt32();
 				br.BaseStream.Seek(meleeStart, SeekOrigin.Begin);
 
-				for (int i = 0; i <= 380; i++)
+				for (int i = 0; i <= mweapons.Length-1; i++)
 				{
 					mweap = new MeleeWeapon(
 						br.ReadByte(), br.ReadByte(), br.ReadUInt16(), br.ReadUInt32(),
@@ -89,7 +106,7 @@ namespace GDataTool
 
 				br.BaseStream.Seek(gunnerStart, SeekOrigin.Begin);
 				//Gunner Weapons
-				for(int j = 0; j <= 77; j++)
+				for(int j = 0; j <= gweapons.Length-1; j++)
                 {
 					gweap = new GunnerWeapon(br.ReadByte(), br.ReadByte(), br.ReadByte(),
 						br.ReadByte(), br.ReadUInt32(), br.ReadUInt16(), br.ReadByte(),
@@ -106,9 +123,64 @@ namespace GDataTool
 
 				br.Dispose();
 			}
+			using (fileStream = new FileStream(fileNameElf, FileMode.Open, FileAccess.Read))
+			{
+				BinaryReader br = new BinaryReader(fileStream, Encoding.GetEncoding("shift_jis"));
+				br.BaseStream.Seek(elfDescriptionOffset, SeekOrigin.Begin);
+				
+				for(int i = 0; i <= descript.Length-1; i++)
+                {
+					Descriptions dsc = new Descriptions();
+					long descOffset;
+					long oldOffset;
+					descOffset = br.ReadUInt32();
+					oldOffset = br.BaseStream.Position;
+					if (descOffset != 0) {
+						br.BaseStream.Seek(descOffset - elfBaseOffset, SeekOrigin.Begin);
+						dsc.Offset1 = (uint)descOffset;
+						dsc.Line1 = sHelper.ReadUntilNull(br);
+					}
+					br.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
+					descOffset = br.ReadUInt32();
+					oldOffset = br.BaseStream.Position;
+					if (descOffset != 0)
+					{
+						br.BaseStream.Seek(descOffset - elfBaseOffset, SeekOrigin.Begin);
+						dsc.Offset2 = (uint)descOffset;
+						dsc.Line2 = sHelper.ReadUntilNull(br);
+					}
+					br.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
+					descOffset = br.ReadUInt32();
+					oldOffset = br.BaseStream.Position;
+					if (descOffset != 0)
+					{
+						br.BaseStream.Seek(descOffset - elfBaseOffset, SeekOrigin.Begin);
+						dsc.Offset3 = (uint)descOffset;
+						dsc.Line3 = sHelper.ReadUntilNull(br);
+					}
+					br.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
+					descOffset = br.ReadUInt32();
+					oldOffset = br.BaseStream.Position;
+					if (descOffset != 0)
+					{
+						br.BaseStream.Seek(descOffset - elfBaseOffset, SeekOrigin.Begin);
+						dsc.Offset4 = (uint)descOffset;
+						dsc.Line4 = sHelper.ReadUntilNull(br);
+					}
+					descript[i] = dsc;
+					br.BaseStream.Seek(oldOffset, SeekOrigin.Begin);
+				}
+
+				for(int j = 1;j <= descript.Length - 2; j++)
+				{
+					Console.WriteLine(j);
+					lstDescriptions.Items.Add(descript[j].Line1);
+				}
+				br.Dispose();
+			}
 		}
 
-		private void listBox1_SelectedIndexChanged(object sender, EventArgs e)
+		private void listMelee_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			UpdateMeleeData();
 		}
@@ -640,6 +712,42 @@ namespace GDataTool
 							break;
 					}
 				}
+			}
+		}
+
+        private void lstDescriptions_SelectedIndexChanged(object sender, EventArgs e)
+        {
+			if (descript[lstDescriptions.SelectedIndex].Line1 != null)
+			{
+				txtDescription1.Text = descript[lstDescriptions.SelectedIndex].Line1;
+			}
+            else
+            {
+				txtDescription1.Text = "";
+            }
+			if (descript[lstDescriptions.SelectedIndex].Line2 != null)
+			{
+				txtDescription2.Text = descript[lstDescriptions.SelectedIndex].Line2;
+			}
+			else
+			{
+				txtDescription2.Text = "";
+			}
+			if (descript[lstDescriptions.SelectedIndex].Line3 != null)
+			{
+				txtDescription3.Text = descript[lstDescriptions.SelectedIndex].Line3;
+			}
+			else
+			{
+				txtDescription3.Text = "";
+			}
+			if (descript[lstDescriptions.SelectedIndex].Line4 != null)
+			{
+				txtDescription4.Text = descript[lstDescriptions.SelectedIndex].Line4;
+			}
+			else
+			{
+				txtDescription4.Text = "";
 			}
 		}
     }

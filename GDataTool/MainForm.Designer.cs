@@ -167,6 +167,12 @@ namespace GDataTool
             this.label36 = new System.Windows.Forms.Label();
             this.label37 = new System.Windows.Forms.Label();
             this.label38 = new System.Windows.Forms.Label();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.txtDescription4 = new System.Windows.Forms.TextBox();
+            this.txtDescription3 = new System.Windows.Forms.TextBox();
+            this.txtDescription2 = new System.Windows.Forms.TextBox();
+            this.txtDescription1 = new System.Windows.Forms.TextBox();
+            this.lstDescriptions = new System.Windows.Forms.ListBox();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.nudSortOrder)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudPrice)).BeginInit();
@@ -200,6 +206,7 @@ namespace GDataTool
             ((System.ComponentModel.ISupportInitialize)(this.nudCapacity)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDefenseGunner)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDamageGunner)).BeginInit();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // lstWeapons
@@ -209,7 +216,7 @@ namespace GDataTool
             this.lstWeapons.Name = "lstWeapons";
             this.lstWeapons.Size = new System.Drawing.Size(163, 407);
             this.lstWeapons.TabIndex = 0;
-            this.lstWeapons.SelectedIndexChanged += new System.EventHandler(this.listBox1_SelectedIndexChanged);
+            this.lstWeapons.SelectedIndexChanged += new System.EventHandler(this.listMelee_SelectedIndexChanged);
             // 
             // label1
             // 
@@ -635,7 +642,7 @@ namespace GDataTool
             this.fileToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(646, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(657, 24);
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -702,10 +709,11 @@ namespace GDataTool
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(12, 27);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(631, 453);
+            this.tabControl1.Size = new System.Drawing.Size(630, 453);
             this.tabControl1.TabIndex = 16;
             // 
             // tabPage1
@@ -719,7 +727,7 @@ namespace GDataTool
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(623, 427);
+            this.tabPage1.Size = new System.Drawing.Size(622, 427);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Blademaster Weapons";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -756,13 +764,14 @@ namespace GDataTool
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(623, 427);
+            this.tabPage2.Size = new System.Drawing.Size(622, 427);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Gunner Weapons";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // panel5
             // 
+            this.panel5.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panel5.Controls.Add(this.nudUnk4);
             this.panel5.Controls.Add(this.nudUnk3);
             this.panel5.Controls.Add(this.nudUnk1);
@@ -771,7 +780,7 @@ namespace GDataTool
             this.panel5.Controls.Add(this.label27);
             this.panel5.Location = new System.Drawing.Point(478, 102);
             this.panel5.Name = "panel5";
-            this.panel5.Size = new System.Drawing.Size(140, 152);
+            this.panel5.Size = new System.Drawing.Size(138, 152);
             this.panel5.TabIndex = 24;
             // 
             // nudUnk4
@@ -1710,18 +1719,68 @@ namespace GDataTool
             this.label38.Text = "Pierce";
             this.label38.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.txtDescription4);
+            this.tabPage3.Controls.Add(this.txtDescription3);
+            this.tabPage3.Controls.Add(this.txtDescription2);
+            this.tabPage3.Controls.Add(this.txtDescription1);
+            this.tabPage3.Controls.Add(this.lstDescriptions);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(622, 427);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Descriptions";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // txtDescription4
+            // 
+            this.txtDescription4.Location = new System.Drawing.Point(206, 98);
+            this.txtDescription4.Name = "txtDescription4";
+            this.txtDescription4.Size = new System.Drawing.Size(279, 20);
+            this.txtDescription4.TabIndex = 4;
+            // 
+            // txtDescription3
+            // 
+            this.txtDescription3.Location = new System.Drawing.Point(206, 71);
+            this.txtDescription3.Name = "txtDescription3";
+            this.txtDescription3.Size = new System.Drawing.Size(279, 20);
+            this.txtDescription3.TabIndex = 3;
+            // 
+            // txtDescription2
+            // 
+            this.txtDescription2.Location = new System.Drawing.Point(206, 44);
+            this.txtDescription2.Name = "txtDescription2";
+            this.txtDescription2.Size = new System.Drawing.Size(279, 20);
+            this.txtDescription2.TabIndex = 2;
+            // 
+            // txtDescription1
+            // 
+            this.txtDescription1.Location = new System.Drawing.Point(206, 17);
+            this.txtDescription1.Name = "txtDescription1";
+            this.txtDescription1.Size = new System.Drawing.Size(279, 20);
+            this.txtDescription1.TabIndex = 1;
+            // 
+            // lstDescriptions
+            // 
+            this.lstDescriptions.FormattingEnabled = true;
+            this.lstDescriptions.Location = new System.Drawing.Point(16, 17);
+            this.lstDescriptions.Name = "lstDescriptions";
+            this.lstDescriptions.Size = new System.Drawing.Size(183, 394);
+            this.lstDescriptions.TabIndex = 0;
+            this.lstDescriptions.SelectedIndexChanged += new System.EventHandler(this.lstDescriptions_SelectedIndexChanged);
+            // 
             // weaponForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(646, 492);
+            this.ClientSize = new System.Drawing.Size(657, 492);
             this.Controls.Add(this.tabControl1);
             this.Controls.Add(this.menuStrip1);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
             this.MaximizeBox = false;
-            this.MaximumSize = new System.Drawing.Size(662, 531);
             this.MinimizeBox = false;
             this.MinimumSize = new System.Drawing.Size(662, 531);
             this.Name = "weaponForm";
@@ -1766,6 +1825,8 @@ namespace GDataTool
             ((System.ComponentModel.ISupportInitialize)(this.nudCapacity)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDefenseGunner)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.nudDamageGunner)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1910,6 +1971,12 @@ namespace GDataTool
         private System.Windows.Forms.Label label50;
         private System.Windows.Forms.CheckBox chkUnknown;
         private System.Windows.Forms.Label label51;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.TextBox txtDescription4;
+        private System.Windows.Forms.TextBox txtDescription3;
+        private System.Windows.Forms.TextBox txtDescription2;
+        private System.Windows.Forms.TextBox txtDescription1;
+        private System.Windows.Forms.ListBox lstDescriptions;
     }
 }
 
