@@ -1,6 +1,9 @@
 # GDataTool
 General editor for Monster Hunter G (PS2).
 
+## Download
+Head over to https://github.com/YukiHaze/GDataTool/releases for the latest release build.
+
 ## Usage
 You need an unpacked copy of sub_main.bin from MHG.
 
@@ -10,12 +13,11 @@ To obtain it:
 * Go into the new folder and search for sub_main.bin, copy it into your working folder.
 * Use https://github.com/viciousShadow/mhtools python script to unpack.
 * Install python 2.6 and use the command "pip install pygobject" and then "pip install pygtk"
-* After this, double click on the python script to open it.
-* Open the .unpacked file with this tool.
+* After this, double click on the python script to open it, click unpack and select sub_main.bin
+* Open the new .unpacked file with GDataTool.
 
 ## To-Do
 
-* Implement Gunner Weapons.
 * Implement Armor Pieces.
 * Implement Items.
 * Implement Crafting Editing.
