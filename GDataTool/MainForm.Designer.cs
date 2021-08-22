@@ -207,7 +207,7 @@ namespace GDataTool
             // lstWeapons
             // 
             this.lstWeapons.FormattingEnabled = true;
-            this.lstWeapons.Location = new System.Drawing.Point(6, 3);
+            this.lstWeapons.Location = new System.Drawing.Point(6, 10);
             this.lstWeapons.Name = "lstWeapons";
             this.lstWeapons.Size = new System.Drawing.Size(163, 407);
             this.lstWeapons.TabIndex = 0;
@@ -226,7 +226,7 @@ namespace GDataTool
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(59, 42);
+            this.label2.Location = new System.Drawing.Point(60, 42);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(35, 13);
             this.label2.TabIndex = 4;
@@ -295,7 +295,7 @@ namespace GDataTool
             this.panel1.Controls.Add(this.label2);
             this.panel1.Controls.Add(this.lblRare);
             this.panel1.Controls.Add(this.label3);
-            this.panel1.Location = new System.Drawing.Point(175, 3);
+            this.panel1.Location = new System.Drawing.Point(175, 10);
             this.panel1.Name = "panel1";
             this.panel1.Size = new System.Drawing.Size(298, 244);
             this.panel1.TabIndex = 12;
@@ -324,7 +324,7 @@ namespace GDataTool
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(39, 193);
+            this.label4.Location = new System.Drawing.Point(40, 193);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 18;
@@ -333,7 +333,7 @@ namespace GDataTool
             // lblCrafting
             // 
             this.lblCrafting.AutoSize = true;
-            this.lblCrafting.Location = new System.Drawing.Point(61, 169);
+            this.lblCrafting.Location = new System.Drawing.Point(60, 169);
             this.lblCrafting.Name = "lblCrafting";
             this.lblCrafting.Size = new System.Drawing.Size(35, 13);
             this.lblCrafting.TabIndex = 17;
@@ -419,7 +419,7 @@ namespace GDataTool
             this.panel2.Controls.Add(this.label11);
             this.panel2.Controls.Add(this.label8);
             this.panel2.Controls.Add(this.label12);
-            this.panel2.Location = new System.Drawing.Point(176, 253);
+            this.panel2.Location = new System.Drawing.Point(176, 260);
             this.panel2.Name = "panel2";
             this.panel2.Size = new System.Drawing.Size(297, 157);
             this.panel2.TabIndex = 13;
@@ -661,19 +661,19 @@ namespace GDataTool
             this.openToolStripMenuItem.Text = "Open";
             this.openToolStripMenuItem.Click += new System.EventHandler(this.openToolStripMenuItem_Click);
             // 
-            // saveToolStripMenuItem1
+            // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Enabled = false;
-            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem1";
+            this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             this.saveToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.S)));
             this.saveToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem1_Click);
             // 
-            // saveToolStripMenuItem
+            // saveAsToolStripMenuItem
             // 
             this.saveAsToolStripMenuItem.Enabled = false;
-            this.saveAsToolStripMenuItem.Name = "saveToolStripMenuItem";
+            this.saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             this.saveAsToolStripMenuItem.ShortcutKeys = ((System.Windows.Forms.Keys)(((System.Windows.Forms.Keys.Control | System.Windows.Forms.Keys.Shift) 
             | System.Windows.Forms.Keys.S)));
             this.saveAsToolStripMenuItem.Size = new System.Drawing.Size(186, 22);
@@ -693,7 +693,7 @@ namespace GDataTool
             // 
             this.cSVToolStripMenuItem.Enabled = false;
             this.cSVToolStripMenuItem.Name = "cSVToolStripMenuItem";
-            this.cSVToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.cSVToolStripMenuItem.Size = new System.Drawing.Size(95, 22);
             this.cSVToolStripMenuItem.Text = "CSV";
             this.cSVToolStripMenuItem.Click += new System.EventHandler(this.cSVToolStripMenuItem_Click);
             // 
@@ -701,13 +701,13 @@ namespace GDataTool
             // 
             this.sQLToolStripMenuItem.Enabled = false;
             this.sQLToolStripMenuItem.Name = "sQLToolStripMenuItem";
-            this.sQLToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.sQLToolStripMenuItem.Size = new System.Drawing.Size(95, 22);
             this.sQLToolStripMenuItem.Text = "SQL";
             this.sQLToolStripMenuItem.Click += new System.EventHandler(this.sQLToolStripMenuItem_Click);
             // 
             // btnSaveChanges
             // 
-            this.btnSaveChanges.Location = new System.Drawing.Point(480, 3);
+            this.btnSaveChanges.Location = new System.Drawing.Point(480, 10);
             this.btnSaveChanges.Name = "btnSaveChanges";
             this.btnSaveChanges.Size = new System.Drawing.Size(136, 23);
             this.btnSaveChanges.TabIndex = 15;
@@ -743,7 +743,7 @@ namespace GDataTool
             // 
             // btnPaste
             // 
-            this.btnPaste.Location = new System.Drawing.Point(480, 63);
+            this.btnPaste.Location = new System.Drawing.Point(480, 70);
             this.btnPaste.Name = "btnPaste";
             this.btnPaste.Size = new System.Drawing.Size(136, 23);
             this.btnPaste.TabIndex = 17;
@@ -753,7 +753,7 @@ namespace GDataTool
             // 
             // btnCopy
             // 
-            this.btnCopy.Location = new System.Drawing.Point(480, 33);
+            this.btnCopy.Location = new System.Drawing.Point(480, 40);
             this.btnCopy.Name = "btnCopy";
             this.btnCopy.Size = new System.Drawing.Size(136, 23);
             this.btnCopy.TabIndex = 16;
@@ -953,7 +953,7 @@ namespace GDataTool
             // label48
             // 
             this.label48.AutoSize = true;
-            this.label48.Location = new System.Drawing.Point(53, 143);
+            this.label48.Location = new System.Drawing.Point(58, 143);
             this.label48.Name = "label48";
             this.label48.Size = new System.Drawing.Size(37, 13);
             this.label48.TabIndex = 256;
@@ -974,7 +974,7 @@ namespace GDataTool
             // label20
             // 
             this.label20.AutoSize = true;
-            this.label20.Location = new System.Drawing.Point(35, 215);
+            this.label20.Location = new System.Drawing.Point(40, 215);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(55, 13);
             this.label20.TabIndex = 18;
@@ -983,7 +983,7 @@ namespace GDataTool
             // lblPriceGunner
             // 
             this.lblPriceGunner.AutoSize = true;
-            this.lblPriceGunner.Location = new System.Drawing.Point(55, 191);
+            this.lblPriceGunner.Location = new System.Drawing.Point(60, 191);
             this.lblPriceGunner.Name = "lblPriceGunner";
             this.lblPriceGunner.Size = new System.Drawing.Size(35, 13);
             this.lblPriceGunner.TabIndex = 17;
@@ -1046,7 +1046,7 @@ namespace GDataTool
             // label23
             // 
             this.label23.AutoSize = true;
-            this.label23.Location = new System.Drawing.Point(59, 168);
+            this.label23.Location = new System.Drawing.Point(64, 168);
             this.label23.Name = "label23";
             this.label23.Size = new System.Drawing.Size(31, 13);
             this.label23.TabIndex = 11;
@@ -1055,7 +1055,7 @@ namespace GDataTool
             // label24
             // 
             this.label24.AutoSize = true;
-            this.label24.Location = new System.Drawing.Point(54, 68);
+            this.label24.Location = new System.Drawing.Point(59, 68);
             this.label24.Name = "label24";
             this.label24.Size = new System.Drawing.Size(36, 13);
             this.label24.TabIndex = 2;
@@ -1064,7 +1064,7 @@ namespace GDataTool
             // label25
             // 
             this.label25.AutoSize = true;
-            this.label25.Location = new System.Drawing.Point(15, 120);
+            this.label25.Location = new System.Drawing.Point(20, 120);
             this.label25.Name = "label25";
             this.label25.Size = new System.Drawing.Size(75, 13);
             this.label25.TabIndex = 9;
@@ -1073,7 +1073,7 @@ namespace GDataTool
             // label26
             // 
             this.label26.AutoSize = true;
-            this.label26.Location = new System.Drawing.Point(55, 42);
+            this.label26.Location = new System.Drawing.Point(60, 42);
             this.label26.Name = "label26";
             this.label26.Size = new System.Drawing.Size(35, 13);
             this.label26.TabIndex = 4;
@@ -1091,7 +1091,7 @@ namespace GDataTool
             // label28
             // 
             this.label28.AutoSize = true;
-            this.label28.Location = new System.Drawing.Point(56, 94);
+            this.label28.Location = new System.Drawing.Point(61, 94);
             this.label28.Name = "label28";
             this.label28.Size = new System.Drawing.Size(34, 13);
             this.label28.TabIndex = 6;

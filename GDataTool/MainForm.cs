@@ -12,26 +12,26 @@ using System.Windows.Forms;
 
 namespace GDataTool
 {
-	public partial class weaponForm : Form
+    public partial class weaponForm : Form
 	{
-		FileStream fileStream;
-		string fileName = "";
+		private FileStream fileStream;
+		private string fileName = "";
 
-		MeleeWeapon mweap;
-		MeleeWeapon[] mweapons = new MeleeWeapon[381];
-		GunnerWeapon gweap;
-		GunnerWeapon[] gweapons = new GunnerWeapon[77];
+		private MeleeWeapon mweap;
+		private MeleeWeapon[] mweapons = new MeleeWeapon[381];
+		private GunnerWeapon gweap;
+		private GunnerWeapon[] gweapons = new GunnerWeapon[78];
 
-		MeleeWeapon mweapBuffer;
-		GunnerWeapon gweapBuffer;
+		private MeleeWeapon mweapBuffer;
+		private GunnerWeapon gweapBuffer;
 
-		StringHelper sHelper = new StringHelper();
+		private StringHelper sHelper = new StringHelper();
 
 		//Offsets
-		long meleeStart = 0x000746E0;
-		long eqStringStart = 0x0008C878;
-		long gunnerStringStart = 0x00092760;
-		long gunnerStart = 0x00076AA0;
+		private long meleeStart = 0x000746E0;
+		private long eqStringStart = 0x0008C878;
+		private long gunnerStringStart = 0x00092760;
+		private long gunnerStart = 0x00076AA0;
 		//long gunnerNameStart = 0x0008C878;
 
 		public weaponForm()
@@ -43,10 +43,10 @@ namespace GDataTool
 		{
 			using (OpenFileDialog openFileDialog = new OpenFileDialog())
 			{
-				//openFileDialog.InitialDirectory = AppDomain.CurrentDomain.BaseDirectory;
-				openFileDialog.Filter = "bin files (*.bin)|*.bin|unpacked files (*.unpacked)|*.unpacked|All files (*.*)|*.*";
-				openFileDialog.FilterIndex = 2;
+				openFileDialog.Filter = "unpacked files (*.unpacked)|*.unpacked|All files (*.*)|*.*";
+				openFileDialog.FilterIndex = 1;
 				openFileDialog.RestoreDirectory = true;
+				openFileDialog.Title = "Load sub_main.bin.unpacked";
 
 				if (openFileDialog.ShowDialog() == DialogResult.OK)
 				{
@@ -90,7 +90,7 @@ namespace GDataTool
 
 				br.BaseStream.Seek(gunnerStart, SeekOrigin.Begin);
 				//Gunner Weapons
-				for(int j = 0; j <= 76; j++)
+				for(int j = 0; j <= 77; j++)
                 {
 					gweap = new GunnerWeapon(br.ReadByte(), br.ReadByte(), br.ReadByte(),
 						br.ReadByte(), br.ReadUInt32(), br.ReadUInt16(), br.ReadByte(),
